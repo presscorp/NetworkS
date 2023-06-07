@@ -68,6 +68,7 @@ let task = networkService.buildTask(from: request) { response in
     }
 }
 
+task?.run()
 ```
 
 <br>
