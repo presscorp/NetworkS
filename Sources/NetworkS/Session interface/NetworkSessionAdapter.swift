@@ -22,6 +22,8 @@ public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, Net
 
     public var loggingEnabled = false
 
+    public private(set) var completionQueue: OperationQueue?
+
     private lazy var session = setNewSession()
 
     private let sessionDelegate = SessionDelegationHandler()
@@ -71,7 +73,8 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
     @discardableResult
     public func setNewSession(
         configuration: URLSessionConfiguration = URLSession.shared.configuration,
-        delegateQueue: OperationQueue? = .current
+        delegateQueue: OperationQueue? = .current,
+        completionQueue: OperationQueue? = nil
     ) -> URLSession {
         let configuration = URLSession.shared.configuration
         session = URLSession(
@@ -79,6 +82,7 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
             delegate: sessionDelegate,
             delegateQueue: delegateQueue
         )
+        self.completionQueue = completionQueue ?? delegateQueue
         return session
     }
 

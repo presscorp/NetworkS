@@ -55,7 +55,7 @@ extension NetworkWorker: NetworkService {
                 return
             }
 
-            completion(response)
+            service.sessionInterface.completionQueue?.addOperation { completion(response) }
 
             requestTask?.completion()
         }

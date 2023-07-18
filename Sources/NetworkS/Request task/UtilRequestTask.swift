@@ -9,6 +9,8 @@ import Foundation
 
 protocol UtilRequestTask {
 
+    var urlRequest: URLRequest? { get set }
+
     var completion: () -> Void { get set }
 
     var loggingEnabled: Bool { get set }

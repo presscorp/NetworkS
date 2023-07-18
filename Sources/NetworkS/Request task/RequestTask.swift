@@ -11,7 +11,7 @@ public protocol RequestTask: AnyObject {
 
     var id: UUID { get }
 
-    var urlRequest: URLRequest? { get set }
+    var urlRequest: URLRequest? { get }
 
     func run()
 
