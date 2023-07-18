@@ -68,9 +68,10 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
         return uploadTask
     }
 
+    @discardableResult
     public func setNewSession(
         configuration: URLSessionConfiguration = URLSession.shared.configuration,
-        delegateQueue: OperationQueue? = .main
+        delegateQueue: OperationQueue? = .current
     ) -> URLSession {
         let configuration = URLSession.shared.configuration
         session = URLSession(

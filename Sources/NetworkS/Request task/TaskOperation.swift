@@ -9,37 +9,51 @@ import Foundation
 
 class TaskOperation: Operation {
 
-    enum State: String { case ready, executing, finished }
+    enum State: String {
+        case ready, executing, finished
+        fileprivate var keyPath: String { "is" + rawValue.capitalized }
+    }
+
+    private weak var requestTask: RequestTask?
 
     var state = State.ready {
         willSet {
-            willChangeValue(forKey: state.rawValue)
-            willChangeValue(forKey: newValue.rawValue)
+            willChangeValue(forKey: newValue.keyPath)
+            willChangeValue(forKey: state.keyPath)
         }
         didSet {
-            didChangeValue(forKey: oldValue.rawValue)
-            didChangeValue(forKey: state.rawValue)
+            didChangeValue(forKey: oldValue.keyPath)
+            didChangeValue(forKey: state.keyPath)
         }
     }
 
     override var isAsynchronous: Bool { true }
-
+    override var isReady: Bool { super.isReady && state == .ready }
     override var isExecuting: Bool { state == .executing }
+    override var isFinished: Bool { state == .finished }
 
-    override var isFinished: Bool {
-        if isCancelled && state != .executing { return true }
-        return state == .finished
+    init(requestTask: RequestTask) {
+        self.requestTask = requestTask
+        super.init()
+        requestTask.completion = { [weak self] in self?.state = .finished }
     }
 
-    private let closure: () -> Void
+    override func start() {
+        if isCancelled {
+            state = .finished
+            return
+        }
 
-    init(closure: @escaping () -> Void) {
-        self.closure = closure
+        main()
+        state = .executing
     }
 
     override func main() {
-        guard !isCancelled else { return }
-        state = .executing
-        closure()
+        requestTask?.run()
+    }
+
+    override func cancel() {
+        super.cancel()
+        requestTask?.stop()
     }
 }

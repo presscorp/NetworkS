@@ -19,6 +19,7 @@ public class TaskManager {
 
     public func run(taskIds: [UUID], inSequence: Bool = false, completion: @escaping () -> Void = {}) {
         let filteredTasks = tasks.filter { taskIds.contains($0.id) }
+        let lastIndex = filteredTasks.count - 1
 
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = inSequence ? 1 : filteredTasks.count
@@ -28,12 +29,11 @@ public class TaskManager {
         self.dispatchGroup = dispatchGroup
 
         for (index, task) in filteredTasks.enumerated() {
-            let operation = TaskOperation { [weak task] in task?.run() }
-
-            let lastIndex = filteredTasks.count - 1
-            task.completion = { [weak operation, weak dispatchGroup] in
-                operation?.state = .finished
-                if !inSequence || index == lastIndex { dispatchGroup?.leave() }
+            let operation = TaskOperation(requestTask: task)
+            operation.completionBlock = { [weak dispatchGroup] in
+                if !inSequence || index == lastIndex {
+                    dispatchGroup?.leave()
+                }
             }
 
             if !inSequence || index == 0 { dispatchGroup.enter() }
@@ -42,8 +42,10 @@ public class TaskManager {
 
         dispatchGroup.notify(queue: .main) { [weak self] in
             completion()
-            self?.queue = nil
-            self?.dispatchGroup = nil
+            if let self {
+                self.queue = nil
+                self.dispatchGroup = nil
+            }
         }
     }
 

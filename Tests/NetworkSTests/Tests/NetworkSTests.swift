@@ -1,6 +1,6 @@
 //
 //  NetworkSTests.swift
-//  
+//
 //
 //  Created by Zhalgas Baibatyr on 02.06.2023.
 //
