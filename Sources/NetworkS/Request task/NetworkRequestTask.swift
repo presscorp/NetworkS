@@ -7,7 +7,7 @@
 
 import Foundation
 
-class NetworkRequestTask: RequestTask {
+class NetworkRequestTask: UtilizableRequestTask {
 
     let sessionTask: URLSessionTask
 

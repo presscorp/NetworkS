@@ -10,7 +10,7 @@ import XCTest
 
 final class SessionRenewalTest: NetworkSTests {
 
-    let request = StatusRequest()
+    private let request = StatusRequest()
 
     override func setUp() {
         super.setUp()

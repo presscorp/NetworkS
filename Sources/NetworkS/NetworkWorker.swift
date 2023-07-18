@@ -29,7 +29,7 @@ extension NetworkWorker: NetworkService {
             return nil
         }
 
-        var requestTask: RequestTask?
+        var requestTask: UtilizableRequestTask?
         let completionHandler = { [weak self] (data: Data?, response: URLResponse?, error: Error?) in
             guard let service = self else { return }
 

@@ -14,7 +14,7 @@ class TaskOperation: Operation {
         fileprivate var keyPath: String { "is" + rawValue.capitalized }
     }
 
-    private weak var requestTask: RequestTask?
+    private weak var requestTask: UtilizableRequestTask?
 
     var state = State.ready {
         willSet {
@@ -32,10 +32,10 @@ class TaskOperation: Operation {
     override var isExecuting: Bool { state == .executing }
     override var isFinished: Bool { state == .finished }
 
-    init(requestTask: RequestTask) {
+    init(requestTask: UtilizableRequestTask) {
         self.requestTask = requestTask
         super.init()
-        requestTask.completion = { [weak self] in self?.state = .finished }
+        self.requestTask?.completion = { [weak self] in self?.state = .finished }
     }
 
     override func start() {
