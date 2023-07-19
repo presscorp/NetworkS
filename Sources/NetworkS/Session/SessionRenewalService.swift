@@ -12,7 +12,7 @@ public protocol SessionRenewalService: AnyObject {
 
     /// Session renewal request;
     /// Implementing this method check if renew process is already launched with regard of `renewIsNeeded`
-    func renew(completion: () -> Void)
+    func renew(completion: @escaping () -> Void)
 
     /// Necessity for session renewal check
     /// - Parameters:

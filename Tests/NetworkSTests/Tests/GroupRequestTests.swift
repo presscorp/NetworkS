@@ -10,7 +10,8 @@ import XCTest
 
 final class GroupRequestTests: NetworkSTests {
 
-    let taskManager = TaskManager()
+    private let taskRunner = TaskRunner()
+    private var tasks = [RequestTask]()
 
     private func createTask(
         _ value: String,
@@ -47,11 +48,11 @@ final class GroupRequestTests: NetworkSTests {
             }
 
             if let task = task {
-                taskManager.tasks.append(task)
+                tasks.append(task)
             }
         }
 
-        taskManager.run(inSequence: inSequence) { completion(values) }
+        taskRunner.run(tasks, inSequence: inSequence) { completion(values) }
     }
 
     func testGroupRequests() {

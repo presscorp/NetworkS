@@ -7,7 +7,7 @@
 
 import Foundation
 
-class NetworkRequestTask: RequestTask {
+class NetworkRequestTask: UtilizableRequestTask {
 
     let sessionTask: URLSessionTask
 
@@ -15,14 +15,14 @@ class NetworkRequestTask: RequestTask {
 
     var urlRequest: URLRequest?
 
-    var completion: () -> Void
+    var operationCompletion: () -> Void
 
     var loggingEnabled = false
 
     init(sessionTask: URLSessionTask, completion: @escaping () -> Void = {}) {
         self.sessionTask = sessionTask
         self.urlRequest = sessionTask.originalRequest
-        self.completion = completion
+        self.operationCompletion = completion
     }
 
     func run() {

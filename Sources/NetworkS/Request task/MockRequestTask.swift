@@ -7,11 +7,11 @@
 
 import Foundation
 
-class MockRequestTask: RequestTask {
+class MockRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
-    var completion = {}
+    var operationCompletion = {}
 
     var loggingEnabled = false
 

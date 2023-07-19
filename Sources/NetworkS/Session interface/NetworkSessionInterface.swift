@@ -26,6 +26,9 @@ public protocol NetworkSessionInterface: AnyObject {
     /// Indication of log printing of request / response into the console
     var loggingEnabled: Bool { get set }
 
+    /// An operation queue for scheduling completion handlers
+    var completionQueue: OperationQueue? { get }
+
     init()
 
     func dataTask(
@@ -46,9 +49,15 @@ public protocol NetworkSessionInterface: AnyObject {
     ///   - delegateQueue: An operation queue for scheduling the delegate calls and completion handlers. The queue should be a serial queue, in order to ensure
     ///    the correct ordering of callbacks. If nil, the session creates a serial operation queue for performing all delegate method calls and completion handler
     ///    calls.
+    ///   - completionQueue: An operation queue for scheduling completion handlers. The queue should be a serial queue, in order to ensure
+    ///    the correct ordering of callbacks. If nil, delegateQueue is utilized.
     /// - Returns: An object that coordinates a group of related, network data transfer tasks.
     @discardableResult
-    func setNewSession(configuration: URLSessionConfiguration, delegateQueue: OperationQueue?) -> URLSession
+    func setNewSession(
+        configuration: URLSessionConfiguration,
+        delegateQueue: OperationQueue?,
+        completionQueue: OperationQueue?
+    ) -> URLSession
 
     /// Network availability indicator
     /// - Returns: Boolean value that indicates whether network connection is available or not

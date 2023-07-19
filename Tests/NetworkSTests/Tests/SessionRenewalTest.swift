@@ -10,7 +10,7 @@ import XCTest
 
 final class SessionRenewalTest: NetworkSTests {
 
-    let request = StatusRequest()
+    private let request = StatusRequest()
 
     override func setUp() {
         super.setUp()
@@ -34,7 +34,7 @@ final class SessionRenewalTest: NetworkSTests {
 
 extension SessionRenewalTest: SessionRenewalService {
 
-    func renew(completion: () -> Void) {
+    func renew(completion: @escaping () -> Void) {
         request.code = "200"
         completion()
     }

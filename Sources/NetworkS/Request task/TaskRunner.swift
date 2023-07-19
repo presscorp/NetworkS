@@ -1,5 +1,5 @@
 //
-//  TaskManager.swift
+//  TaskRunner.swift
 //  
 //
 //  Created by Zhalgas Baibatyr on 06.06.2023.
@@ -7,31 +7,28 @@
 
 import Foundation
 
-public class TaskManager {
+public class TaskRunner {
 
     private var queue: OperationQueue?
 
     private var dispatchGroup: DispatchGroup?
 
-    public var tasks = [RequestTask]()
-
     public init() {}
 
-    public func run(taskIds: [UUID], inSequence: Bool = false, completion: @escaping () -> Void = {}) {
-        let filteredTasks = tasks.filter { taskIds.contains($0.id) }
-        let lastIndex = filteredTasks.count - 1
+    public func run(_ tasks: [RequestTask], inSequence: Bool = false, completion: @escaping () -> Void = {}) {
+        let tasks = tasks.compactMap { $0 as? UtilizableRequestTask }
 
         let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = inSequence ? 1 : filteredTasks.count
+        queue.maxConcurrentOperationCount = inSequence ? 1 : tasks.count
         self.queue = queue
 
         let dispatchGroup = DispatchGroup()
         self.dispatchGroup = dispatchGroup
 
-        for (index, task) in filteredTasks.enumerated() {
+        for (index, task) in tasks.enumerated() {
             let operation = TaskOperation(requestTask: task)
             operation.completionBlock = { [weak dispatchGroup] in
-                if !inSequence || index == lastIndex {
+                if !inSequence || index == tasks.count - 1 {
                     dispatchGroup?.leave()
                 }
             }
@@ -47,10 +44,5 @@ public class TaskManager {
                 self.dispatchGroup = nil
             }
         }
-    }
-
-    public func run(inSequence: Bool = false, completion: @escaping () -> Void = {}) {
-        let ids = tasks.map { $0.id }
-        run(taskIds: ids, inSequence: inSequence, completion: completion)
     }
 }
