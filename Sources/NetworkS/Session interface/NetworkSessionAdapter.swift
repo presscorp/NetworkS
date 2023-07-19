@@ -73,7 +73,7 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
     @discardableResult
     public func setNewSession(
         configuration: URLSessionConfiguration = URLSession.shared.configuration,
-        delegateQueue: OperationQueue? = .current,
+        delegateQueue: OperationQueue? = nil,
         completionQueue: OperationQueue? = nil
     ) -> URLSession {
         let configuration = URLSession.shared.configuration
@@ -82,7 +82,7 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
             delegate: sessionDelegate,
             delegateQueue: delegateQueue
         )
-        self.completionQueue = completionQueue ?? delegateQueue
+        self.completionQueue = completionQueue
         return session
     }
 

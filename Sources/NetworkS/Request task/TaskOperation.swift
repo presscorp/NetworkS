@@ -35,7 +35,7 @@ class TaskOperation: Operation {
     init(requestTask: UtilizableRequestTask) {
         self.requestTask = requestTask
         super.init()
-        self.requestTask?.completion = { [weak self] in self?.state = .finished }
+        self.requestTask?.operationCompletion = { [weak self] in self?.state = .finished }
     }
 
     override func start() {

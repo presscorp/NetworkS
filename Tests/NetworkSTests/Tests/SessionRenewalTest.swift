@@ -34,7 +34,7 @@ final class SessionRenewalTest: NetworkSTests {
 
 extension SessionRenewalTest: SessionRenewalService {
 
-    func renew(completion: () -> Void) {
+    func renew(completion: @escaping () -> Void) {
         request.code = "200"
         completion()
     }

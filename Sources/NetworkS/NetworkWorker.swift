@@ -31,6 +31,8 @@ extension NetworkWorker: NetworkService {
 
         var requestTask: UtilizableRequestTask?
         let completionHandler = { [weak self] (data: Data?, response: URLResponse?, error: Error?) in
+            defer { requestTask?.operationCompletion() }
+
             guard let service = self else { return }
 
             if service.sessionInterface.loggingEnabled {
@@ -55,9 +57,11 @@ extension NetworkWorker: NetworkService {
                 return
             }
 
-            service.sessionInterface.completionQueue?.addOperation { completion(response) }
-
-            requestTask?.completion()
+            if let queue = service.sessionInterface.completionQueue {
+                queue.addOperation { completion(response) }
+            } else {
+                completion(response)
+            }
         }
 
         if let url = urlRequest.url, let mockResponse = request.mockResponse {
