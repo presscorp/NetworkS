@@ -10,8 +10,17 @@ import XCTest
 
 final class GroupRequestTests: NetworkSTests {
 
-    private let taskRunner = TaskRunner()
-    private var tasks = [RequestTask]()
+    var taskRunner: TaskRunner!
+
+    override func setUp() {
+        super.setUp()
+        taskRunner = TaskRunner()
+    }
+
+    override func tearDown() {
+        taskRunner = nil
+        super.tearDown()
+    }
 
     private func createTask(
         _ value: String,
@@ -33,49 +42,42 @@ final class GroupRequestTests: NetworkSTests {
         }
     }
 
-    private func fetch(
-        initialValues: [String],
-        inSequence: Bool = false,
-        completion: @escaping (_ values: [String]) -> Void
-    ) {
-        var values = [String]()
+    private func createExpectationsAndTasks(initialValues: [String]) -> ([XCTestExpectation], [RequestTask]) {
+        var expectations = [XCTestExpectation]()
+        var tasks = [RequestTask]()
 
         for initialValue in initialValues {
+            let expectation = expectation(description: #function + " with value " + initialValue)
             let task = createTask(initialValue) { result in
                 if case .success(let value) = result {
-                    values.append(value)
+                    XCTAssertEqual(initialValue, value)
                 }
+                expectation.fulfill()
             }
 
             if let task = task {
                 tasks.append(task)
             }
+
+            expectations += [expectation]
         }
 
-        taskRunner.run(tasks, inSequence: inSequence) { completion(values) }
+        return (expectations, tasks)
     }
 
     func testGroupRequests() {
-        let expectation = expectation(description: #function)
-
         let initialValues = Array(1...3).map { $0.description }
-        fetch(initialValues: initialValues) { values in
-            XCTAssert(values.sorted() == initialValues)
-            expectation.fulfill()
-        }
+        let (expectations, tasks) = createExpectationsAndTasks(initialValues: initialValues)
 
-        wait(for: [expectation], timeout: 5)
+        taskRunner.run(tasks)
+        wait(for: expectations, timeout: 5)
     }
 
     func testGroupRequestsInSequence() {
-        let expectation = expectation(description: #function)
-
         let initialValues = Array(1...3).map { $0.description }
-        fetch(initialValues: initialValues, inSequence: true) { values in
-            XCTAssert(values == initialValues)
-            expectation.fulfill()
-        }
+        let (expectations, tasks) = createExpectationsAndTasks(initialValues: initialValues)
 
-        wait(for: [expectation], timeout: 5)
+        taskRunner.run(tasks, inSequence: true)
+        wait(for: expectations, timeout: 5, enforceOrder: true)
     }
 }
