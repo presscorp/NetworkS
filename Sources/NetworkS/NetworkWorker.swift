@@ -35,8 +35,8 @@ extension NetworkWorker: NetworkService {
 
             guard let service = self else { return }
 
-            if service.sessionInterface.loggingEnabled {
-                NetworkLogger.log(
+            if let logger = service.sessionInterface.logger {
+                logger.log(
                     request: urlRequest,
                     response: response as? HTTPURLResponse,
                     responseData: data,
@@ -90,7 +90,7 @@ extension NetworkWorker: NetworkService {
             }
         }
 
-        requestTask?.loggingEnabled = sessionInterface.loggingEnabled
+        requestTask?.logger = sessionInterface.logger
 
         return requestTask
     }

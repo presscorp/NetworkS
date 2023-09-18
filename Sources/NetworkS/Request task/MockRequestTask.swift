@@ -11,15 +11,15 @@ class MockRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
+    var urlRequest: URLRequest?
+
     var operationCompletion = {}
 
-    var loggingEnabled = false
+    var logger: NetworkLogger?
 
     var responseIsMocked: Bool { true }
 
     var completionHandler: (Data?, URLResponse?, Error?) -> Void
-
-    var urlRequest: URLRequest?
 
     private let mock: (urlResponse: URLResponse?, data: Data?, error: NSError?)
 
@@ -29,8 +29,8 @@ class MockRequestTask: UtilizableRequestTask {
     }
 
     func run() {
-        if loggingEnabled, let request = urlRequest {
-            NetworkLogger.log(request: request)
+        if let logger, let request = urlRequest {
+            logger.log(request: request)
         }
         completionHandler(mock.data, mock.urlResponse, mock.error)
     }

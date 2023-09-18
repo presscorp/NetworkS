@@ -11,15 +11,15 @@ class CacheRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
+    var urlRequest: URLRequest?
+
     var operationCompletion = {}
 
-    var loggingEnabled = false
+    var logger: NetworkLogger?
 
     var responseIsCached: Bool { true }
 
     var completionHandler: (Data?, URLResponse?, Error?) -> Void
-
-    var urlRequest: URLRequest?
 
     private let cache: (urlResponse: URLResponse, data: Data)
 
@@ -29,8 +29,8 @@ class CacheRequestTask: UtilizableRequestTask {
     }
 
     func run() {
-        if loggingEnabled, let request = urlRequest {
-            NetworkLogger.log(request: request)
+        if let logger, let request = urlRequest {
+            logger.log(request: request)
         }
         completionHandler(cache.data, cache.urlResponse, nil)
     }
