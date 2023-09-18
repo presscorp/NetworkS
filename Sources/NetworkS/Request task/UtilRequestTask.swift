@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias UtilizableRequestTask = RequestTask & UtilRequestTask
+
 protocol UtilRequestTask {
 
     var urlRequest: URLRequest? { get set }
@@ -14,6 +16,15 @@ protocol UtilRequestTask {
     var operationCompletion: () -> Void { get set }
 
     var loggingEnabled: Bool { get set }
+
+    var responseIsCached: Bool { get }
+
+    var responseIsMocked: Bool { get }
 }
 
-typealias UtilizableRequestTask = RequestTask & UtilRequestTask
+extension UtilRequestTask {
+
+    var responseIsCached: Bool { false }
+
+    var responseIsMocked: Bool { false }
+}
