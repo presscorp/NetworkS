@@ -61,7 +61,7 @@ sessionAdapter.defaultSSLChallengeEnabled = true
 let worker = NetworkWorker(sessionInterface: sessionAdapter)
 
 let request = UUIDRequest()
-let task = networkService.buildTask(from: request) { response in
+let task = worker.buildTask(from: request) { response in
     if response.success,
        let body = response.jsonBody,
        let uuidString = body["uuid"] as? String {
