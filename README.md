@@ -13,6 +13,7 @@
 - NetworkS provides the opportunity to renew session by updating authorization
 - NetworkS supports SSL certificate pinning along with default challenge
 - NetworkS supports easily implemented response mocking
+- NetworkS supports response caching feature
 
 <br>
 
