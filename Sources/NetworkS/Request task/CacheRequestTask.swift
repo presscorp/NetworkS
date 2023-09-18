@@ -1,13 +1,13 @@
 //
-//  MockRequestTask.swift
+//  CacheRequestTask.swift
 //  
 //
-//  Created by Zhalgas Baibatyr on 03.06.2023.
+//  Created by Zhalgas Baibatyr on 17.09.2023.
 //
 
 import Foundation
 
-class MockRequestTask: UtilizableRequestTask {
+class CacheRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
@@ -15,16 +15,16 @@ class MockRequestTask: UtilizableRequestTask {
 
     var loggingEnabled = false
 
-    var responseIsMocked: Bool { true }
+    var responseIsCached: Bool { true }
 
     var completionHandler: (Data?, URLResponse?, Error?) -> Void
 
     var urlRequest: URLRequest?
 
-    private let mock: (urlResponse: URLResponse?, data: Data?, error: NSError?)
+    private let cache: (urlResponse: URLResponse, data: Data)
 
-    init(mock: (URLResponse?, Data?, NSError?), completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        self.mock = mock
+    init(cache: (URLResponse, Data), completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        self.cache = cache
         self.completionHandler = completionHandler
     }
 
@@ -32,7 +32,7 @@ class MockRequestTask: UtilizableRequestTask {
         if loggingEnabled, let request = urlRequest {
             NetworkLogger.log(request: request)
         }
-        completionHandler(mock.data, mock.urlResponse, mock.error)
+        completionHandler(cache.data, cache.urlResponse, nil)
     }
 
     func stop() {

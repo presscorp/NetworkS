@@ -24,6 +24,8 @@ public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, Net
 
     public private(set) var completionQueue: OperationQueue?
 
+    public private(set) weak var cache: URLCache?
+
     private lazy var session = setNewSession()
 
     private let sessionDelegate = SessionDelegationHandler()
@@ -83,6 +85,7 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
             delegateQueue: delegateQueue
         )
         self.completionQueue = completionQueue
+        self.cache = configuration.urlCache
         return session
     }
 

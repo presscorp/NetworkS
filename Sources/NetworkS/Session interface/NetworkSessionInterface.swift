@@ -29,6 +29,9 @@ public protocol NetworkSessionInterface: AnyObject {
     /// An operation queue for scheduling completion handlers
     var completionQueue: OperationQueue? { get }
 
+    /// Cache set to session's configuration
+    var cache: URLCache? { get }
+
     init()
 
     func dataTask(

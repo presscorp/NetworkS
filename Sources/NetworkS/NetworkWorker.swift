@@ -40,7 +40,9 @@ extension NetworkWorker: NetworkService {
                     request: urlRequest,
                     response: response as? HTTPURLResponse,
                     responseData: data,
-                    error: error as NSError?
+                    error: error as NSError?,
+                    responseIsCached: requestTask?.responseIsCached ?? false,
+                    responseIsMocked: requestTask?.responseIsMocked ?? false
                 )
             }
 
@@ -67,6 +69,12 @@ extension NetworkWorker: NetworkService {
         if let url = urlRequest.url, let mockResponse = request.mockResponse {
             let mock = composeMock(from: url, mockResponse)
             requestTask = MockRequestTask(mock: mock, completionHandler: completionHandler)
+            requestTask?.urlRequest = urlRequest
+        } else if request.canRecieveCachedResponse,
+                  let cache = sessionInterface.cache,
+                  let cachedResponse = cache.cachedResponse(for: urlRequest) {
+            let cache = (cachedResponse.response, cachedResponse.data)
+            requestTask = CacheRequestTask(cache: cache, completionHandler: completionHandler)
             requestTask?.urlRequest = urlRequest
         } else {
             if request is MultipartFormDataRequest, let bodyData = urlRequest.httpBody {
