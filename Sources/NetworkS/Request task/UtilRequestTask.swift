@@ -15,7 +15,7 @@ protocol UtilRequestTask {
 
     var operationCompletion: () -> Void { get set }
 
-    var loggingEnabled: Bool { get set }
+    var logger: NetworkLogger? { get set }
 
     var responseIsCached: Bool { get }
 

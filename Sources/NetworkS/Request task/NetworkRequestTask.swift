@@ -9,15 +9,15 @@ import Foundation
 
 class NetworkRequestTask: UtilizableRequestTask {
 
-    let sessionTask: URLSessionTask
-
     let id = UUID()
 
     var urlRequest: URLRequest?
 
     var operationCompletion: () -> Void
 
-    var loggingEnabled = false
+    var logger: NetworkLogger?
+
+    let sessionTask: URLSessionTask
 
     init(sessionTask: URLSessionTask, completion: @escaping () -> Void = {}) {
         self.sessionTask = sessionTask
@@ -26,8 +26,8 @@ class NetworkRequestTask: UtilizableRequestTask {
     }
 
     func run() {
-        if loggingEnabled, let request = sessionTask.originalRequest {
-            NetworkLogger.log(request: request)
+        if let logger, let request = sessionTask.originalRequest {
+            logger.log(request: request)
         }
         sessionTask.resume()
     }

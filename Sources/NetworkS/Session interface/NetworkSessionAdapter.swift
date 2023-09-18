@@ -20,7 +20,7 @@ public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, Net
 
     public weak var sessionRenewal: SessionRenewalService?
 
-    public var loggingEnabled = false
+    public var logger: NetworkLogger?
 
     public private(set) var completionQueue: OperationQueue?
 
