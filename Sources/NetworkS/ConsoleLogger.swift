@@ -9,6 +9,8 @@ import Foundation
 
 public class ConsoleLogger {
 
+    public init() {}
+
     private var separatorLine: String { [String](repeating: "☰", count: 64).joined() }
 
     private func title(_ token: String) -> String { "[ NetworkS: HTTP " + token + " ]" }
