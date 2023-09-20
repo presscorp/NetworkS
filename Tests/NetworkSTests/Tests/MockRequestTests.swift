@@ -10,7 +10,7 @@ import XCTest
 
 final class MockRequestTests: NetworkSTests {
 
-    func testMock() {
+    func testMockedResponse() {
         let expectation = expectation(description: #function)
 
         let request = MockRequest(parameters: ["key": "value"])
@@ -27,10 +27,10 @@ final class MockRequestTests: NetworkSTests {
         XCTAssertNotNil(task)
         task!.run()
 
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 1)
     }
 
-    func testMeockedRequest_whenStopped_thenCancel() {
+    func testMockedResponse_whenStopped_thenCancel() {
         let expectation = expectation(description: #function)
 
         let request = MockRequest(parameters: ["key": "value"])
@@ -43,6 +43,6 @@ final class MockRequestTests: NetworkSTests {
         XCTAssertNotNil(task)
         task!.stop()
 
-        wait(for: [expectation], timeout: 5)
+        wait(for: [expectation], timeout: 1)
     }
 }
