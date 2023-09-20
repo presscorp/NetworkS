@@ -10,8 +10,21 @@ import XCTest
 
 final class CachedResponseTests: NetworkSTests {
 
+    var request: NetworkRequest!
+
+    override func setUp() {
+        super.setUp()
+
+        request = PngImageRequest()
+    }
+
+    override func tearDown() {
+        request = nil
+
+        super.tearDown()
+    }
+
     private func getTask(completion: @escaping (_ responseHeaders: [String: String]) -> Void) -> RequestTask? {
-        let request = PngImageRequest()
         return networkService.buildTask(from: request) { response in
             XCTAssert(response.success)
             var responseHeaders = [String: String]()
@@ -29,19 +42,23 @@ final class CachedResponseTests: NetworkSTests {
     func testCachedResponse() {
         let expectation1 = expectation(description: #function + " 1")
         var responseHeaders1 = [String: String]()
-        getTask { responseHeaders in
+        let task1 = getTask { responseHeaders in
             responseHeaders1 = responseHeaders
             expectation1.fulfill()
-        }?.run()
+        }
+        XCTAssertNotNil(task1)
+        task1!.run()
 
         wait(for: [expectation1], timeout: 5)
 
         let expectation2 = expectation(description: #function + " 2")
         var responseHeaders2 = [String: String]()
-        getTask { responseHeaders in
+        let task2 = getTask { responseHeaders in
             responseHeaders2 = responseHeaders
             expectation2.fulfill()
-        }?.run()
+        }
+        XCTAssertNotNil(task2)
+        task2!.run()
 
         wait(for: [expectation2], timeout: 1)
 
@@ -71,5 +88,51 @@ final class CachedResponseTests: NetworkSTests {
         task2!.stop()
 
         wait(for: [expectation2], timeout: 1)
+    }
+
+    func testClearCachedResponseForRequest() {
+        let expectation1 = expectation(description: #function + " 1")
+        var responseHeaders1 = [String: String]()
+        let task1 = getTask { responseHeaders in
+            responseHeaders1 = responseHeaders
+            expectation1.fulfill()
+        }
+
+        XCTAssertNotNil(task1)
+        task1!.run()
+
+        wait(for: [expectation1], timeout: 5)
+
+        let expectation2 = expectation(description: #function + " 2")
+        var responseHeaders2 = [String: String]()
+        let task2 = getTask { responseHeaders in
+            responseHeaders2 = responseHeaders
+            expectation2.fulfill()
+        }
+
+        XCTAssertNotNil(task2)
+        task2!.run()
+
+        wait(for: [expectation2], timeout: 1)
+
+        XCTAssertEqual(responseHeaders1, responseHeaders2)
+
+        networkService.clearCachedResponse(for: request)
+
+        sleep(1)
+
+        let expectation3 = expectation(description: #function + " 3")
+        var responseHeaders3 = [String: String]()
+        let task3 = getTask { responseHeaders in
+            responseHeaders3 = responseHeaders
+            expectation3.fulfill()
+        }
+
+        XCTAssertNotNil(task3)
+        task3!.run()
+
+        wait(for: [expectation3], timeout: 1)
+
+        XCTAssertNotEqual(responseHeaders2, responseHeaders3)
     }
 }

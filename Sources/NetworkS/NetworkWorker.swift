@@ -22,7 +22,7 @@ public class NetworkWorker: NetworkCompose {
 extension NetworkWorker: NetworkService {
 
     public func buildTask(
-        from request: some NetworkRequest,
+        from request: NetworkRequest,
         completion: @escaping ((_ response: NetworkResponse) -> Void)
     ) -> RequestTask? {
         guard let urlRequest = composeUrlRequest(from: request) else {
@@ -93,5 +93,22 @@ extension NetworkWorker: NetworkService {
         requestTask?.logger = sessionInterface.logger
 
         return requestTask
+    }
+
+    public func clearCachedResponse(for request: NetworkRequest) {
+        guard let urlRequest = composeUrlRequest(from: request),
+              let cache = sessionInterface.cache else {
+            return
+        }
+
+        cache.removeCachedResponse(for: urlRequest)
+    }
+
+    public func clearAllCachedResponses() {
+        guard let cache = sessionInterface.cache else {
+            return
+        }
+
+        cache.removeAllCachedResponses()
     }
 }

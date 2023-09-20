@@ -9,7 +9,11 @@
 public protocol NetworkService: AnyObject {
 
     func buildTask(
-        from request: some NetworkRequest,
+        from request: NetworkRequest,
         completion: @escaping ((_ response: NetworkResponse) -> Void)
     ) -> RequestTask?
+
+    func clearCachedResponse(for request: NetworkRequest)
+
+    func clearAllCachedResponses()
 }
