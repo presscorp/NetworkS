@@ -15,7 +15,7 @@ public protocol NetworkLogger: AnyObject {
         request: URLRequest,
         response: HTTPURLResponse?,
         responseData: Data?,
-        error: NSError?,
+        error: Error?,
         responseIsCached: Bool,
         responseIsMocked: Bool
     )

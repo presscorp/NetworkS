@@ -65,7 +65,7 @@ extension ConsoleLogger: NetworkLogger {
             request: URLRequest,
             response: HTTPURLResponse?,
             responseData: Data?,
-            error: NSError?,
+            error: Error?,
             responseIsCached: Bool,
             responseIsMocked: Bool
         ) {
@@ -106,7 +106,9 @@ extension ConsoleLogger: NetworkLogger {
             }
         }
 
-        if let error = error {
+        if let error = error as? NetworkError {
+            log += "‣ ERROR: " + error.rawValue + "\n\n"
+        } else if let error {
             log += "‣ ERROR: " + error.localizedDescription + "\n\n"
         }
         log += separatorLine + "\n\n"

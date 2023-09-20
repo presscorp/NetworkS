@@ -21,9 +21,9 @@ class MockRequestTask: UtilizableRequestTask {
 
     var completionHandler: (Data?, URLResponse?, Error?) -> Void
 
-    private let mock: (urlResponse: URLResponse?, data: Data?, error: NSError?)
+    private let mock: (urlResponse: URLResponse?, data: Data?, error: Error?)
 
-    init(mock: (URLResponse?, Data?, NSError?), completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    init(mock: (URLResponse?, Data?, Error?), completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
         self.mock = mock
         self.completionHandler = completionHandler
     }
