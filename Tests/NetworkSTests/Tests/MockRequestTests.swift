@@ -24,8 +24,24 @@ final class MockRequestTests: NetworkSTests {
             expectation.fulfill()
         }
 
-        guard let task else { return XCTAssert(false) }
-        task.run()
+        XCTAssertNotNil(task)
+        task!.run()
+
+        wait(for: [expectation], timeout: 5)
+    }
+
+    func testMeockedRequest_whenStopped_thenCancel() {
+        let expectation = expectation(description: #function)
+
+        let request = MockRequest(parameters: ["key": "value"])
+        let task = networkService.buildTask(from: request) { response in
+            XCTAssertNotNil(response.error)
+            XCTAssertEqual(response.error!, NetworkError.cancelled)
+            expectation.fulfill()
+        }
+
+        XCTAssertNotNil(task)
+        task!.stop()
 
         wait(for: [expectation], timeout: 5)
     }

@@ -31,6 +31,22 @@ final class RequestTests: NetworkSTests {
         wait(for: [expectation], timeout: 5)
     }
 
+    func testRequest_whenStopped_thenCancel() {
+        let expectation = expectation(description: #function)
+
+        let request = AnythingRequest(parameters: ["key": "value"])
+        let task = networkService.buildTask(from: request) { response in
+            XCTAssertFalse(response.success)
+            XCTAssertNotNil(response.error)
+            expectation.fulfill()
+        }
+
+        XCTAssertNotNil(task)
+        task!.stop()
+
+        wait(for: [expectation], timeout: 1)
+    }
+
     func testMultipartRequest() {
         let expectation = expectation(description: #function)
 

@@ -40,13 +40,13 @@ extension NetworkWorker: NetworkService {
                     request: urlRequest,
                     response: response as? HTTPURLResponse,
                     responseData: data,
-                    error: error as NSError?,
+                    error: error,
                     responseIsCached: requestTask?.responseIsCached ?? false,
                     responseIsMocked: requestTask?.responseIsMocked ?? false
                 )
             }
 
-            let response = service.composeResponse(from: response, data, error as NSError?)
+            let response = service.composeResponse(from: response, data, error)
 
             if let sessionRenewal = service.sessionInterface.sessionRenewal,
                sessionRenewal.renewIsNeeded(for: request, response) {
