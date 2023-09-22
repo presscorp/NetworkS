@@ -16,8 +16,6 @@ public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, Net
 
     public var sslCertificates = [NSData]()
 
-    public var additionalHTTPHeaders = [String: String]()
-
     public weak var sessionRenewal: SessionRenewalService?
 
     public var logger: NetworkLogger?
@@ -51,6 +49,32 @@ public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, Net
 
 extension NetworkSessionAdapter: NetworkSessionInterface {
 
+    @discardableResult
+    public func setNewSession(
+        configuration: URLSessionConfiguration = URLSession.shared.configuration,
+        delegateQueue: OperationQueue? = nil,
+        completionQueue: OperationQueue? = nil
+    ) -> URLSession {
+        session = URLSession(
+            configuration: configuration,
+            delegate: sessionDelegate,
+            delegateQueue: delegateQueue
+        )
+        self.completionQueue = completionQueue
+        self.cache = configuration.urlCache
+        return session
+    }
+
+    public var additionalHTTPHeaders: [String: String] {
+        guard let httpAdditionalHeaders = session.configuration.httpAdditionalHeaders else { return [:] }
+        var headers = [String: String]()
+        for (key, value) in httpAdditionalHeaders {
+            guard let key = key as? String, let value = value as? String else { continue }
+            headers[key] = value
+        }
+        return headers
+    }
+
     public func dataTask(
         with request: URLRequest,
         completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void
@@ -70,22 +94,6 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
         let dataKeeper = SessionTaskDataKeeper(completionHandler)
         sessionDelegate.lifeCycle?.dataKeepers[uploadTask.taskIdentifier] = dataKeeper
         return uploadTask
-    }
-
-    @discardableResult
-    public func setNewSession(
-        configuration: URLSessionConfiguration = URLSession.shared.configuration,
-        delegateQueue: OperationQueue? = nil,
-        completionQueue: OperationQueue? = nil
-    ) -> URLSession {
-        session = URLSession(
-            configuration: configuration,
-            delegate: sessionDelegate,
-            delegateQueue: delegateQueue
-        )
-        self.completionQueue = completionQueue
-        self.cache = configuration.urlCache
-        return session
     }
 
     public func networkIsAvailable() -> Bool { networkIsReachable }
