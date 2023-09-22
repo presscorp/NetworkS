@@ -78,7 +78,6 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
         delegateQueue: OperationQueue? = nil,
         completionQueue: OperationQueue? = nil
     ) -> URLSession {
-        let configuration = URLSession.shared.configuration
         session = URLSession(
             configuration: configuration,
             delegate: sessionDelegate,
