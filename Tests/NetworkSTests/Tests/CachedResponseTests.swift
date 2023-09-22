@@ -66,8 +66,6 @@ final class CachedResponseTests: NetworkSTests {
     }
 
     func testCachedResponse_whenStopped_thenCancel() {
-        let request = PngImageRequest()
-
         let expectation1 = expectation(description: #function + " 1")
         let task1 = networkService.buildTask(from: request) { response in
             XCTAssertTrue(response.success)
