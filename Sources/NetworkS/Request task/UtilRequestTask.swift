@@ -11,8 +11,6 @@ typealias UtilizableRequestTask = RequestTask & UtilRequestTask
 
 protocol UtilRequestTask {
 
-    var urlRequest: URLRequest? { get set }
-
     var operationCompletion: () -> Void { get set }
 
     var logger: NetworkLogger? { get set }

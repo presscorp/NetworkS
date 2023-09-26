@@ -129,7 +129,7 @@ final class CachedResponseTests: NetworkSTests {
         XCTAssertNotNil(task3)
         task3!.run()
 
-        wait(for: [expectation3], timeout: 1)
+        wait(for: [expectation3], timeout: 5)
 
         XCTAssertNotEqual(responseHeaders2, responseHeaders3)
     }

@@ -30,7 +30,11 @@ extension NetworkWorker: NetworkService {
         }
 
         var requestTask: UtilizableRequestTask?
-        let completionHandler = { [weak self] (data: Data?, response: URLResponse?, error: Error?) in
+        lazy var completionHandler = { [weak self, weak requestTask] (
+            data: Data?,
+            response: URLResponse?,
+            error: Error?
+        ) in
             defer { requestTask?.operationCompletion() }
 
             guard let service = self else { return }
@@ -67,26 +71,35 @@ extension NetworkWorker: NetworkService {
         }
 
         if let url = urlRequest.url, let mockResponse = request.mockResponse {
-            let mock = composeMock(from: url, mockResponse)
-            requestTask = MockRequestTask(mock: mock, completionHandler: completionHandler)
-            requestTask?.urlRequest = urlRequest
+            let mockRequestTask = MockRequestTask()
+            requestTask = mockRequestTask
+            mockRequestTask.mock = composeMock(from: url, mockResponse)
+            mockRequestTask.completionHandler = completionHandler
+            mockRequestTask.urlRequest = urlRequest
         } else if request.canRecieveCachedResponse,
                   let cache = sessionInterface.cache,
                   let cachedResponse = cache.cachedResponse(for: urlRequest) {
-            let cache = (cachedResponse.response, cachedResponse.data)
-            requestTask = CacheRequestTask(cache: cache, completionHandler: completionHandler)
-            requestTask?.urlRequest = urlRequest
+            let cacheRequestTask = CacheRequestTask()
+            requestTask = cacheRequestTask
+            cacheRequestTask.cache = (cachedResponse.response, cachedResponse.data)
+            cacheRequestTask.completionHandler = completionHandler
+            cacheRequestTask.urlRequest = urlRequest
         } else {
             if request is MultipartFormDataRequest, let bodyData = urlRequest.httpBody {
-                let uploadTask = sessionInterface.uploadTask(
+                let networkRequestTask = NetworkRequestTask()
+                requestTask = networkRequestTask
+                networkRequestTask.sessionTask = sessionInterface.uploadTask(
                     with: urlRequest,
                     from: bodyData,
                     completionHandler: completionHandler
                 )
-                requestTask = NetworkRequestTask(sessionTask: uploadTask)
             } else {
-                let dataTask = sessionInterface.dataTask(with: urlRequest, completionHandler: completionHandler)
-                requestTask = NetworkRequestTask(sessionTask: dataTask)
+                let networkRequestTask = NetworkRequestTask()
+                requestTask = networkRequestTask
+                networkRequestTask.sessionTask = sessionInterface.dataTask(
+                    with: urlRequest,
+                    completionHandler: completionHandler
+                )
             }
         }
 
