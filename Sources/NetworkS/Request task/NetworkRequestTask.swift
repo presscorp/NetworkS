@@ -11,28 +11,27 @@ class NetworkRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
-    var urlRequest: URLRequest?
+    private(set) var urlRequest: URLRequest?
 
-    var operationCompletion: () -> Void
+    var operationCompletion = {}
 
     var logger: NetworkLogger?
 
-    let sessionTask: URLSessionTask
-
-    init(sessionTask: URLSessionTask, completion: @escaping () -> Void = {}) {
-        self.sessionTask = sessionTask
-        self.urlRequest = sessionTask.originalRequest
-        self.operationCompletion = completion
+    var sessionTask: URLSessionTask? {
+        didSet { urlRequest = sessionTask?.originalRequest }
     }
 
     func run() {
-        if let logger, let request = sessionTask.originalRequest {
+        guard let sessionTask else { return }
+
+        if let logger, let request = urlRequest {
             logger.log(request: request)
         }
+        
         sessionTask.resume()
     }
 
     func stop() {
-        sessionTask.cancel()
+        sessionTask?.cancel()
     }
 }

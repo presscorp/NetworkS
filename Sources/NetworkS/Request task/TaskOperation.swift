@@ -14,7 +14,7 @@ class TaskOperation: Operation {
         fileprivate var keyPath: String { "is" + rawValue.capitalized }
     }
 
-    private weak var requestTask: UtilizableRequestTask?
+    private var requestTask: UtilizableRequestTask?
 
     var state = State.ready {
         willSet {

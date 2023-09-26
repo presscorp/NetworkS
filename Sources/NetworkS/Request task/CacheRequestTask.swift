@@ -19,23 +19,21 @@ class CacheRequestTask: UtilizableRequestTask {
 
     var responseIsCached: Bool { true }
 
-    var completionHandler: (Data?, URLResponse?, Error?) -> Void
+    var completionHandler: ((Data?, URLResponse?, Error?) -> Void)?
 
-    private let cache: (urlResponse: URLResponse, data: Data)
-
-    init(cache: (URLResponse, Data), completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        self.cache = cache
-        self.completionHandler = completionHandler
-    }
+    var cache: (urlResponse: URLResponse, data: Data)?
 
     func run() {
+        guard let completionHandler, let cache else { return }
+        
         if let logger, let request = urlRequest {
             logger.log(request: request)
         }
+
         completionHandler(cache.data, cache.urlResponse, nil)
     }
 
     func stop() {
-        completionHandler(nil, nil, NetworkError.cancelled)
+        completionHandler?(nil, nil, NetworkError.cancelled)
     }
 }
