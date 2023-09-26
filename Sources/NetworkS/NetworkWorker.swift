@@ -17,20 +17,14 @@ public class NetworkWorker: NetworkCompose {
     public init(sessionInterface: NetworkSessionInterface) {
         self.sessionInterface = sessionInterface
     }
-}
 
-extension NetworkWorker: NetworkService {
-
-    public func buildTask(
-        from request: NetworkRequest,
-        completion: @escaping ((_ response: NetworkResponse) -> Void)
-    ) -> RequestTask? {
-        guard let urlRequest = composeUrlRequest(from: request) else {
-            return nil
-        }
-
-        var requestTask: UtilizableRequestTask?
-        lazy var completionHandler = { [weak self, weak requestTask] (
+    private func completionHandler(
+        request: NetworkRequest,
+        completion: @escaping ((_ response: NetworkResponse) -> Void),
+        urlRequest: URLRequest,
+        requestTask: UtilizableRequestTask?
+    ) -> (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void {
+        return { [weak self, weak requestTask] (
             data: Data?,
             response: URLResponse?,
             error: Error?
@@ -69,6 +63,26 @@ extension NetworkWorker: NetworkService {
                 completion(response)
             }
         }
+    }
+}
+
+extension NetworkWorker: NetworkService {
+
+    public func buildTask(
+        from request: NetworkRequest,
+        completion: @escaping ((_ response: NetworkResponse) -> Void)
+    ) -> RequestTask? {
+        guard let urlRequest = composeUrlRequest(from: request) else {
+            return nil
+        }
+
+        var requestTask: UtilizableRequestTask?
+        lazy var completionHandler = completionHandler(
+            request: request,
+            completion: completion,
+            urlRequest: urlRequest,
+            requestTask: requestTask
+        )
 
         if let url = urlRequest.url, let mockResponse = request.mockResponse {
             let mockRequestTask = MockRequestTask()
