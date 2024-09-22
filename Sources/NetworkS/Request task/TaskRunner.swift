@@ -45,4 +45,8 @@ public class TaskRunner {
             }
         }
     }
+
+    public func stopTasks() {
+        queue?.cancelAllOperations()
+    }
 }

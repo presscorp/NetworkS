@@ -27,7 +27,7 @@ class NetworkRequestTask: UtilizableRequestTask {
         if let logger, let request = urlRequest {
             logger.log(request: request)
         }
-        
+
         sessionTask.resume()
     }
 

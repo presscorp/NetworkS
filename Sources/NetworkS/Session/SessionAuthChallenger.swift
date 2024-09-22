@@ -16,34 +16,33 @@ extension SessionAuthChallenger {
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
-        var disposition: URLSession.AuthChallengeDisposition
-        if defaultSSLChallengeEnabled {
-            disposition = .performDefaultHandling
-        } else {
-            disposition = .cancelAuthenticationChallenge
-        }
-        var urlCredential: URLCredential?
-
-        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-        let serverTrust = challenge.protectionSpace.serverTrust {
-            let isTrusted = SecTrustEvaluateWithError(serverTrust, nil)
-
-            if isTrusted, let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) {
-                let serverCertificateData = SecCertificateCopyData(serverCertificate)
-                let data = CFDataGetBytePtr(serverCertificateData)
-                let size = CFDataGetLength(serverCertificateData)
-                let serverCertData = NSData(bytes: data, length: size)
-
-                for localCertData in sslCertificates {
-                     guard serverCertData.isEqual(to: localCertData as Data) else { continue }
-                     let credential = URLCredential(trust: serverTrust)
-                     disposition = .useCredential
-                     urlCredential = credential
-                     break
-                }
+        let protectionSpace = challenge.protectionSpace
+        switch sslCertificateCheck {
+        case .enabled(let allowDefault):
+            guard protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+                  let serverTrust = protectionSpace.serverTrust,
+                  SecTrustEvaluateWithError(serverTrust, nil),
+                  let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) else {
+                return completionHandler(allowDefault ? .performDefaultHandling : .cancelAuthenticationChallenge, nil)
             }
-        }
 
-        completionHandler(disposition, urlCredential)
+            let serverCertificateData = SecCertificateCopyData(serverCertificate)
+            let data = CFDataGetBytePtr(serverCertificateData)
+            let size = CFDataGetLength(serverCertificateData)
+            let serverCertData = NSData(bytes: data, length: size)
+
+            let credential = URLCredential(trust: serverTrust)
+
+            for localCertData in sslCertificates {
+                guard serverCertData.isEqual(to: localCertData as Data) else { continue }
+                return completionHandler(.useCredential, credential)
+            }
+
+            completionHandler(allowDefault ? .performDefaultHandling : .cancelAuthenticationChallenge, nil)
+        case .disabled:
+            let serverTrust = protectionSpace.serverTrust
+            let credential = serverTrust.map(URLCredential.init)
+            completionHandler(.useCredential, credential)
+        }
     }
 }
