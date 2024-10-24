@@ -20,7 +20,7 @@ public extension MultipartFormDataRequest {
 
     var method: RequestMethod { .POST }
 
-    var encoding: RequestContentEncoding { fatalError() }
+    var encoding: RequestContentEncoding { fatalError(#function + " has not been implemented") }
 
     static func generateBoundary() -> String { "Boundary-" + UUID().uuidString }
 

@@ -25,7 +25,7 @@ class MockRequestTask: UtilizableRequestTask {
 
     func run() {
         guard let completionHandler, let mock else { return }
-        
+
         if let logger, let request = urlRequest {
             logger.log(request: request)
         }

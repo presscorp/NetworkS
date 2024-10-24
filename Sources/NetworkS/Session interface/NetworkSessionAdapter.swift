@@ -12,7 +12,7 @@ import Network
 /// It's much better to use worker (NetworkService) instead of applying adapter directly for network tasks
 public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, NetworkConnectionChecker {
 
-    public var defaultSSLChallengeEnabled = false
+    public var sslCertificateCheck = SSLCertificateCheck.enabled()
 
     public var sslCertificates = [NSData]()
 

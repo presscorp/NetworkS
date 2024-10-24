@@ -24,11 +24,7 @@ public class NetworkWorker: NetworkCompose {
         urlRequest: URLRequest,
         requestTask: UtilizableRequestTask?
     ) -> (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void {
-        return { [weak self, weak requestTask] (
-            data: Data?,
-            response: URLResponse?,
-            error: Error?
-        ) in
+        return { [weak self, weak requestTask] (data: Data?, response: URLResponse?, error: Error?) in
             defer { requestTask?.operationCompletion() }
 
             guard let service = self else { return }
@@ -48,8 +44,8 @@ public class NetworkWorker: NetworkCompose {
 
             if let sessionRenewal = service.sessionInterface.sessionRenewal,
                sessionRenewal.renewIsNeeded(for: request, response) {
-                sessionRenewal.renew { [weak self] in
-                    guard let service = self else { return }
+                sessionRenewal.renew { [weak self] success in
+                    guard success, let service = self else { return }
                     let task = service.buildTask(from: request, completion: completion)
                     task?.run()
                 }

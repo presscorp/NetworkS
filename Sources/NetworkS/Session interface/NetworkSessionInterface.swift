@@ -10,8 +10,8 @@ import Foundation
 /// Interface between fundamental network session and its worker (request maker)
 public protocol NetworkSessionInterface: AnyObject {
 
-    /// Default SSL certificate handling for the challenge
-    var defaultSSLChallengeEnabled: Bool { get set }
+    /// SSL certificate check option
+    var sslCertificateCheck: SSLCertificateCheck { get set }
 
     /// SSL certificates stored as binary data
     var sslCertificates: [NSData] { get set }
@@ -47,13 +47,13 @@ public protocol NetworkSessionInterface: AnyObject {
 
     /// Set new instance of URLSession
     /// - Parameters:
-    ///   - configuration: A configuration object that specifies certain behaviors, such as caching policies, timeouts, proxies, pipelining, TLS versions to
-    ///   support, cookie policies, and credential storage.
-    ///   - delegateQueue: An operation queue for scheduling the delegate calls and completion handlers. The queue should be a serial queue, in order to ensure
-    ///    the correct ordering of callbacks. If nil, the session creates a serial operation queue for performing all delegate method calls and completion handler
-    ///    calls.
-    ///   - completionQueue: An operation queue for scheduling completion handlers. The queue should be a serial queue, in order to ensure
-    ///    the correct ordering of callbacks. If nil, delegateQueue is utilized.
+    ///   - configuration: A configuration object that specifies certain behaviors, such as caching policies,
+    ///   timeouts, proxies, pipelining, TLS versions to support, cookie policies, and credential storage.
+    ///   - delegateQueue: An operation queue for scheduling the delegate calls and completion handlers.
+    ///   The queue should be a serial queue, in order to ensure the correct ordering of callbacks. If nil, the session
+    ///   creates a serial operation queue for performing all delegate method calls and completion handler calls.
+    ///   - completionQueue: An operation queue for scheduling completion handlers. The queue should be a serial queue,
+    ///   in order to ensure If nil, the sessionthe correct ordering of callbacks. If nil, delegateQueue is utilized.
     /// - Returns: An object that coordinates a group of related, network data transfer tasks.
     @discardableResult
     func setNewSession(
@@ -65,4 +65,12 @@ public protocol NetworkSessionInterface: AnyObject {
     /// Network availability indicator
     /// - Returns: Boolean value that indicates whether network connection is available or not
     func networkIsAvailable() -> Bool
+}
+
+public extension NetworkSessionInterface {
+
+    @discardableResult
+    func setNewSession(configuration: URLSessionConfiguration, completionQueue: OperationQueue?) -> URLSession {
+        return setNewSession(configuration: configuration, delegateQueue: nil, completionQueue: completionQueue)
+    }
 }

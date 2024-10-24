@@ -55,7 +55,7 @@ import NetworkS
 
 // Create session interface and use it across the app
 let sessionAdapter = NetworkSessionAdapter()
-sessionAdapter.defaultSSLChallengeEnabled = true
+sessionAdapter.sslCertificateCheck = .disabled
 
 // Work with a new instance of network service
 let worker = NetworkWorker(sessionInterface: sessionAdapter)

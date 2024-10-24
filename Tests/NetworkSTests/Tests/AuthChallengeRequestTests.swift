@@ -13,7 +13,7 @@ final class AuthChallengeRequestTests: NetworkSTests {
     override func setUp() {
         super.setUp()
 
-        sessionInterface.defaultSSLChallengeEnabled = false
+        sessionInterface.sslCertificateCheck = .enabled()
         if let file = Bundle.module.path(forResource: "httpbin.org", ofType: "cer"),
            let certData = NSData(contentsOfFile: file) {
             sessionInterface.sslCertificates = [certData]

@@ -28,13 +28,15 @@ public extension NetworkResponse {
 
     var plaintextBody: String? { body?.utf8EncodedString }
 
-    func decode<T: Decodable>() throws -> T {
+    func decode<T: Decodable>(keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) throws -> T {
         guard let data = body else {
             let description = "Expected Optional<Data> value but found nil instead"
             let context = DecodingError.Context(codingPath: [], debugDescription: description)
             let error = DecodingError.valueNotFound(Optional<Data>.self, context)
             throw error
         }
-        return try JSONDecoder().decode(T.self, from: data)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = keyDecodingStrategy
+        return try decoder.decode(T.self, from: data)
     }
 }

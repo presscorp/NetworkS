@@ -9,7 +9,7 @@ import Foundation
 
 protocol SessionAuthChallengeService: AnyObject {
 
-    var defaultSSLChallengeEnabled: Bool { get set }
+    var sslCertificateCheck: SSLCertificateCheck { get set }
 
     var sslCertificates: [NSData] { get set }
 

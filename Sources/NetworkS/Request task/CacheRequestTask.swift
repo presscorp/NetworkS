@@ -25,7 +25,7 @@ class CacheRequestTask: UtilizableRequestTask {
 
     func run() {
         guard let completionHandler, let cache else { return }
-        
+
         if let logger, let request = urlRequest {
             logger.log(request: request)
         }

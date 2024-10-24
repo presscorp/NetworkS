@@ -49,7 +49,7 @@ public extension NetworkRequest {
 
     func edit(httpHeaders: inout [String: String]) {}
 
-    static func encode<T: Codable>(_ object: T) throws -> Any {
+    static func encode<T: Encodable>(_ object: T) throws -> Any {
         let data = try JSONEncoder().encode(object)
         return try JSONSerialization.jsonObject(with: data)
     }
