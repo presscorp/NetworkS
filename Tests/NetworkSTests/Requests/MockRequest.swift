@@ -12,7 +12,7 @@ final class MockRequest: NetworkRequestExtensible {
 
     var url: RequestURL { MockURL.mock }
     var method: RequestMethod { .POST }
-    var encoding: RequestContentType? { .json }
+    var contentType: RequestContentType? { .json }
     let dict: [String: Any]
     let body: Data?
 
