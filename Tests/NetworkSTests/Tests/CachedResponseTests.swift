@@ -65,29 +65,6 @@ final class CachedResponseTests: NetworkSTests {
         XCTAssertEqual(responseHeaders1, responseHeaders2)
     }
 
-    func testCachedResponse_whenStopped_thenCancel() {
-        let expectation1 = expectation(description: #function + " 1")
-        let task1 = networkService.buildTask(from: request) { response in
-            XCTAssertTrue(response.success)
-            expectation1.fulfill()
-        }
-        XCTAssertNotNil(task1)
-        task1!.run()
-
-        wait(for: [expectation1], timeout: 5)
-
-        let expectation2 = expectation(description: #function + " 2")
-        let task2 = networkService.buildTask(from: request) { response in
-            XCTAssertNotNil(response.error)
-            XCTAssertEqual(response.error!, NetworkError.cancelled)
-            expectation2.fulfill()
-        }
-        XCTAssertNotNil(task2)
-        task2!.stop()
-
-        wait(for: [expectation2], timeout: 1)
-    }
-
     func testClearCachedResponseForRequest() {
         let expectation1 = expectation(description: #function + " 1")
         var responseHeaders1 = [String: String]()

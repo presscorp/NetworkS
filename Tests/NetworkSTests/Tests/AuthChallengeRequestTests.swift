@@ -23,7 +23,7 @@ final class AuthChallengeRequestTests: NetworkSTests {
     func testRequest() {
         let expectation = expectation(description: #function)
 
-        let request = AnythingRequest(parameters: ["key": "value"])
+        let request = AnythingRequest(dict: ["key": "value"])
         let task = networkService.buildTask(from: request) { response in
             guard response.success,
                   let body = response.jsonBody,

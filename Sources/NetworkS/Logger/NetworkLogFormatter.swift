@@ -7,15 +7,18 @@
 
 import Foundation
 
-public class NetworkLogFormatter {
+public final class NetworkLogFormatter {
 
     public init() {}
+}
 
-    private var separatorLine: String { [String](repeating: "☰", count: 64).joined() }
+private extension NetworkLogFormatter {
 
-    private func title(_ token: String) -> String { "[ NetworkS: HTTP " + token + " ]" }
+    var separatorLine: String { [String](repeating: "☰", count: 64).joined() }
 
-    private func getLog(for request: URLRequest) -> String {
+    func title(_ token: String) -> String { "[ NetworkS: " + token + " ]" }
+
+    func getLog(for request: URLRequest) -> String {
         var log = ""
 
         if let url = request.url,
@@ -43,12 +46,26 @@ public class NetworkLogFormatter {
 
         return log
     }
+}
 
-    public func printableLog(request: URLRequest) -> String {
+public extension NetworkLogFormatter {
+
+    func printableLog(_ message: String) -> String {
         var log = ""
 
         log += "\n" + separatorLine + "\n\n"
-        log += title("Request ➡️") + "\n\n"
+        log += title("Message 💬") + "\n\n"
+        log += "‣ TEXT: " + message + "\n\n"
+        log += separatorLine + "\n\n"
+
+        return log
+    }
+
+    func printableLog(request: URLRequest) -> String {
+        var log = ""
+
+        log += "\n" + separatorLine + "\n\n"
+        log += title("HTTP Request ➡️") + "\n\n"
         log += "‣ TIME: " + Date().description + "\n\n"
         log += getLog(for: request)
         log += separatorLine + "\n\n"
@@ -56,7 +73,7 @@ public class NetworkLogFormatter {
         return log
     }
 
-    public func printableLog(
+    func printableLog(
         request: URLRequest,
         response: HTTPURLResponse?,
         responseData: Data?,
@@ -70,7 +87,7 @@ public class NetworkLogFormatter {
 
         let titlePrefix = responseIsCached ? "Cached " : (responseIsMocked ? "Mocked " : "")
 
-        log += title(titlePrefix + "Response ⬅️") + "\n\n"
+        log += title(titlePrefix + "HTTP Response ⬅️") + "\n\n"
 
         log += "‣ TIME: " + Date().description + "\n\n"
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TaskOperation: Operation, @unchecked Sendable {
+final class TaskOperation: Operation, @unchecked Sendable {
 
     enum State: String {
         case ready, executing, finished

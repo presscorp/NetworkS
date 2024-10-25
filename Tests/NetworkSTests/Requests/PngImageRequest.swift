@@ -7,11 +7,10 @@
 
 import NetworkS
 
-class PngImageRequest: NetworkRequest {
+final class PngImageRequest: NetworkRequestExtensible {
 
     var url: RequestURL { HttpbinOrgURL.imagePng }
     var method: RequestMethod { .GET }
-    var encoding: RequestContentEncoding { .url }
     var canRecieveCachedResponse: Bool { true }
 
     func edit(httpHeaders: inout [String: String]) {

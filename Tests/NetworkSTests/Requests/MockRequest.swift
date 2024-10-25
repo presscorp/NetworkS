@@ -8,19 +8,21 @@
 import Foundation
 import NetworkS
 
-class MockRequest: NetworkRequest {
+final class MockRequest: NetworkRequestExtensible {
 
     var url: RequestURL { MockURL.mock }
     var method: RequestMethod { .POST }
-    var encoding: RequestContentEncoding { .json }
-    let parameters: [String: Any]
+    var contentType: RequestContentType? { .json }
+    let dict: [String: Any]
+    let body: Data?
 
     var mockResponse: NetworkResponse? {
-        let data = try? JSONSerialization.data(withJSONObject: parameters)
+        let data = try? JSONSerialization.data(withJSONObject: dict)
         return SuccessResponse(statusCode: 200, body: data, headers: [:])
     }
 
-    init(parameters: [String: Any]) {
-        self.parameters = parameters
+    init(dict: [String: Any]) {
+        self.dict = dict
+        body = Self.json(dict)
     }
 }

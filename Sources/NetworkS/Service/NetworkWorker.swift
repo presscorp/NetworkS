@@ -8,7 +8,7 @@
 import Foundation
 
 /// Worker class intended for making network requests
-public class NetworkWorker: NetworkCompose {
+public final class NetworkWorker {
 
     let sessionInterface: NetworkSessionInterface
 
@@ -17,15 +17,24 @@ public class NetworkWorker: NetworkCompose {
     public init(sessionInterface: NetworkSessionInterface) {
         self.sessionInterface = sessionInterface
     }
+}
 
-    private func completionHandler(
+private extension NetworkWorker {
+
+    func completionHandler(
         request: NetworkRequest,
         completion: @escaping ((_ response: NetworkResponse) -> Void),
         urlRequest: URLRequest,
         requestTask: UtilizableRequestTask?
     ) -> (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void {
         return { [weak self, weak requestTask] (data: Data?, response: URLResponse?, error: Error?) in
-            defer { requestTask?.operationCompletion() }
+            defer {
+                if let queue = self?.sessionInterface.completionQueue {
+                    queue.addOperation { [weak requestTask] in requestTask?.operationCompletion() }
+                } else {
+                    requestTask?.operationCompletion()
+                }
+            }
 
             guard let service = self else { return }
 
@@ -53,6 +62,7 @@ public class NetworkWorker: NetworkCompose {
                 return
             }
 
+            if let requestTask, requestTask.stopped { return }
             if let queue = service.sessionInterface.completionQueue {
                 queue.addOperation { completion(response) }
             } else {
@@ -135,3 +145,5 @@ extension NetworkWorker: NetworkService {
         cache.removeAllCachedResponses()
     }
 }
+
+extension NetworkWorker: NetworkCompose {}

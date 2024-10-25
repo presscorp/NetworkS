@@ -18,6 +18,8 @@ protocol UtilRequestTask {
     var responseIsCached: Bool { get }
 
     var responseIsMocked: Bool { get }
+
+    var stopped: Bool { get }
 }
 
 extension UtilRequestTask {

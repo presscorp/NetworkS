@@ -18,7 +18,7 @@ class NetworkSTests: XCTestCase {
         super.setUp()
 
         let sessionAdapter = NetworkSessionAdapter()
-        sessionAdapter.sslCertificateCheck = .disabled
+        sessionAdapter.sslCertificateCheck = .enabled(allowDefault: true)
         sessionAdapter.logger = ConsoleLogger()
         sessionInterface = sessionAdapter
 

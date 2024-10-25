@@ -13,6 +13,8 @@ protocol SessionAuthChallengeService: AnyObject {
 
     var sslCertificates: [NSData] { get set }
 
+    var logger: NetworkLogger? { get }
+
     func urlSession(
         _ session: URLSession,
         didReceive challenge: URLAuthenticationChallenge,

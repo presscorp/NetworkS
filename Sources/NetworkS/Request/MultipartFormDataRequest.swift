@@ -9,25 +9,23 @@ import Foundation
 
 public typealias MultipartFormDataParams = (data: Data, name: String, fileName: String, mimeType: String)
 
-public protocol MultipartFormDataRequest: NetworkRequest {
-
-    var paramsArray: [MultipartFormDataParams] { get }
+public protocol MultipartFormDataRequest: NetworkRequestExtensible {
 
     var boundary: String { get }
 }
 
 public extension MultipartFormDataRequest {
 
-    var method: RequestMethod { .POST }
+    var contentType: RequestContentType? { .formData(boundary: boundary) }
 
-    var encoding: RequestContentEncoding { fatalError(#function + " has not been implemented") }
-
-    static func generateBoundary() -> String { "Boundary-" + UUID().uuidString }
-
-    var httpBody: Data? {
+    static func multipartFormData(
+        from dict: [String: Any] = [:],
+        paramsArray: [MultipartFormDataParams],
+        boundary: String
+    ) -> Data? {
         var data = Data()
 
-        parameters.forEach { key, value in
+        dict.forEach { key, value in
             guard let value = value as? CustomStringConvertible else { return }
             data.append("\r\n--" + boundary + "\r\n")
             data.append("Content-Disposition: form-data; name=\"" + key + "\"\r\n\r\n")
@@ -46,6 +44,8 @@ public extension MultipartFormDataRequest {
 
         return data as Data
     }
+
+    static func newBoundary() -> String { "Boundary-" + UUID().uuidString }
 }
 
 fileprivate extension Data {
