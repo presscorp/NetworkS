@@ -13,7 +13,7 @@ final class MockRequestTests: NetworkSTests {
     func testMockedResponse() {
         let expectation = expectation(description: #function)
 
-        let request = MockRequest(parameters: ["key": "value"])
+        let request = MockRequest(dict: ["key": "value"])
         let task = networkService.buildTask(from: request) { response in
             guard response.success,
                   let dict = response.jsonBody as? [String: String] else {
@@ -26,22 +26,6 @@ final class MockRequestTests: NetworkSTests {
 
         XCTAssertNotNil(task)
         task!.run()
-
-        wait(for: [expectation], timeout: 1)
-    }
-
-    func testMockedResponse_whenStopped_thenCancel() {
-        let expectation = expectation(description: #function)
-
-        let request = MockRequest(parameters: ["key": "value"])
-        let task = networkService.buildTask(from: request) { response in
-            XCTAssertNotNil(response.error)
-            XCTAssertEqual(response.error!, NetworkError.cancelled)
-            expectation.fulfill()
-        }
-
-        XCTAssertNotNil(task)
-        task!.stop()
 
         wait(for: [expectation], timeout: 1)
     }

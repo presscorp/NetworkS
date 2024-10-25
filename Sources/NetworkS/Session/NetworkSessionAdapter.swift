@@ -10,7 +10,7 @@ import Network
 
 /// Classic implementation of adapter between fundamental network session and its worker (request maker);
 /// It's much better to use worker (NetworkService) instead of applying adapter directly for network tasks
-public class NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, NetworkConnectionChecker {
+public final class NetworkSessionAdapter {
 
     public var sslCertificateCheck = SSLCertificateCheck.enabled()
 
@@ -98,3 +98,5 @@ extension NetworkSessionAdapter: NetworkSessionInterface {
 
     public func networkIsAvailable() -> Bool { networkIsReachable }
 }
+
+extension NetworkSessionAdapter: SessionAuthChallenger, SessionLifeCycle, NetworkConnectionChecker {}

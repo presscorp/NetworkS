@@ -1,21 +1,25 @@
 //
-//  SessionAuthChallenger.swift
-//  
+//  WebViewAuthChallenger.swift
 //
-//  Created by Zhalgas Baibatyr on 02.06.2023.
+//
+//  Created by Zhalgas Baibatyr on 30.10.2023.
 //
 
-import Foundation
+import WebKit
 
-protocol SessionAuthChallenger: SessionAuthChallengeService {}
+public protocol WebViewAuthChallenger: WebViewAuthChallengeService {}
 
-extension SessionAuthChallenger {
+public extension WebViewAuthChallenger {
 
-    func urlSession(
-        _ session: URLSession,
+    func webView(
+        _ webView: WKWebView,
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
+        var disposition: URLSession.AuthChallengeDisposition
+        var credential: URLCredential?
+        defer { completionHandler(disposition, credential) }
+
         let protectionSpace = challenge.protectionSpace
         switch sslCertificateCheck {
         case .enabled(let allowDefault):
@@ -23,7 +27,8 @@ extension SessionAuthChallenger {
                   let serverTrust = protectionSpace.serverTrust,
                   SecTrustEvaluateWithError(serverTrust, nil),
                   let serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0) else {
-                return completionHandler(allowDefault ? .performDefaultHandling : .cancelAuthenticationChallenge, nil)
+                disposition = allowDefault ? .performDefaultHandling : .cancelAuthenticationChallenge
+                return
             }
 
             let serverCertificateData = SecCertificateCopyData(serverCertificate)
@@ -31,24 +36,27 @@ extension SessionAuthChallenger {
             let size = CFDataGetLength(serverCertificateData)
             let serverCertData = NSData(bytes: data, length: size)
 
-            let credential = URLCredential(trust: serverTrust)
+            let urlCredential = URLCredential(trust: serverTrust)
 
             for localCertData in sslCertificates {
                 guard serverCertData.isEqual(to: localCertData as Data) else { continue }
-                return completionHandler(.useCredential, credential)
+                disposition = .useCredential
+                credential = urlCredential
+                return
             }
 
             if allowDefault {
-                completionHandler(.performDefaultHandling, nil)
+                disposition = .performDefaultHandling
                 let text = "⚠️ Fell for default SSL certificate handling for " + challenge.protectionSpace.host + " ⚠️"
                 logger?.log(message: text)
             } else {
-                completionHandler(.cancelAuthenticationChallenge, nil)
+                disposition = .cancelAuthenticationChallenge
             }
         case .disabled:
             let serverTrust = protectionSpace.serverTrust
-            let credential = serverTrust.map(URLCredential.init)
-            completionHandler(.useCredential, credential)
+            let urlCredential = serverTrust.map(URLCredential.init)
+            disposition = .useCredential
+            credential = urlCredential
         }
     }
 }

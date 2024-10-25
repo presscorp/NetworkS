@@ -17,3 +17,10 @@ public protocol NetworkService: AnyObject {
 
     func clearAllCachedResponses()
 }
+
+public extension NetworkService {
+
+    func buildTask(from request: NetworkRequest) -> RequestTask? {
+        buildTask(from: request) { _ in }
+    }
+}

@@ -5,16 +5,17 @@
 //  Created by Zhalgas Baibatyr on 02.06.2023.
 //
 
+import Foundation
 import NetworkS
 
-class AnythingRequest: NetworkRequest {
+final class AnythingRequest: NetworkRequestExtensible {
 
     var url: RequestURL { HttpbinOrgURL.anything }
     var method: RequestMethod { .POST }
-    var encoding: RequestContentEncoding { .json }
-    let parameters: [String: Any]
+    var contentType: RequestContentType? { .json }
+    let body: Data?
 
-    init(parameters: [String: Any]) {
-        self.parameters = parameters
+    init(dict: [String: Any]) {
+        body = Self.json(dict)
     }
 }

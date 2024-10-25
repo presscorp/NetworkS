@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class TaskRunner {
+public final class TaskRunner {
 
     private var queue: OperationQueue?
 

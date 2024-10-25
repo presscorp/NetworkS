@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CacheRequestTask: UtilizableRequestTask {
+final class CacheRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
@@ -23,7 +23,10 @@ class CacheRequestTask: UtilizableRequestTask {
 
     var cache: (urlResponse: URLResponse, data: Data)?
 
+    var stopped = false
+
     func run() {
+        stopped = false
         guard let completionHandler, let cache else { return }
 
         if let logger, let request = urlRequest {
@@ -34,6 +37,6 @@ class CacheRequestTask: UtilizableRequestTask {
     }
 
     func stop() {
-        completionHandler?(nil, nil, NetworkError.cancelled)
+        stopped = true
     }
 }

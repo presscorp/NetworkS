@@ -7,10 +7,9 @@
 
 import NetworkS
 
-class StatusRequest: NetworkRequest {
+final class StatusRequest: NetworkRequestExtensible {
 
     var url: RequestURL { HttpbinOrgURL.status(code) }
     var method: RequestMethod { .GET }
-    var encoding: RequestContentEncoding { .url }
     var code = "200"
 }

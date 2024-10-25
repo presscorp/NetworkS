@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ConsoleLogger {
+public final class ConsoleLogger {
 
     private let formatter = NetworkLogFormatter()
 
@@ -15,6 +15,12 @@ public class ConsoleLogger {
 }
 
 extension ConsoleLogger: NetworkLogger {
+
+    /// Network related message logging
+    public func log(message: String) {
+        let log = formatter.printableLog(message)
+        print(log)
+    }
 
     /// Network request logging
     public func log(request: URLRequest) {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MockRequestTask: UtilizableRequestTask {
+final class MockRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
@@ -23,7 +23,10 @@ class MockRequestTask: UtilizableRequestTask {
 
     var mock: (urlResponse: URLResponse?, data: Data?, error: Error?)?
 
+    var stopped = false
+
     func run() {
+        stopped = false
         guard let completionHandler, let mock else { return }
 
         if let logger, let request = urlRequest {
@@ -34,6 +37,6 @@ class MockRequestTask: UtilizableRequestTask {
     }
 
     func stop() {
-        completionHandler?(nil, nil, NetworkError.cancelled)
+        stopped = true
     }
 }

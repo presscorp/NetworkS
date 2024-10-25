@@ -7,7 +7,7 @@
 
 import Foundation
 
-class NetworkRequestTask: UtilizableRequestTask {
+final class NetworkRequestTask: UtilizableRequestTask {
 
     let id = UUID()
 
@@ -17,12 +17,14 @@ class NetworkRequestTask: UtilizableRequestTask {
 
     var logger: NetworkLogger?
 
+    var stopped: Bool { sessionTask?.state == .canceling }
+
     var sessionTask: URLSessionTask? {
         didSet { urlRequest = sessionTask?.originalRequest }
     }
 
     func run() {
-        guard let sessionTask else { return }
+        guard let sessionTask, sessionTask.state != .running else { return }
 
         if let logger, let request = urlRequest {
             logger.log(request: request)
@@ -32,6 +34,7 @@ class NetworkRequestTask: UtilizableRequestTask {
     }
 
     func stop() {
-        sessionTask?.cancel()
+        guard let sessionTask, sessionTask.state == .running else { return }
+        sessionTask.cancel()
     }
 }

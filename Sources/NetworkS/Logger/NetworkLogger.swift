@@ -9,6 +9,8 @@ import Foundation
 
 public protocol NetworkLogger: AnyObject {
 
+    func log(message: String)
+
     func log(request: URLRequest)
 
     func log(

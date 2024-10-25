@@ -13,7 +13,7 @@ final class RequestTests: NetworkSTests {
     func testRequest() {
         let expectation = expectation(description: #function)
 
-        let request = AnythingRequest(parameters: ["key": "value"])
+        let request = AnythingRequest(dict: ["key": "value"])
         let task = networkService.buildTask(from: request) { response in
             guard response.success,
                   let body = response.jsonBody,
@@ -32,19 +32,15 @@ final class RequestTests: NetworkSTests {
     }
 
     func testRequest_whenStopped_thenCancel() {
-        let expectation = expectation(description: #function)
-
-        let request = AnythingRequest(parameters: ["key": "value"])
-        let task = networkService.buildTask(from: request) { response in
-            XCTAssertFalse(response.success)
-            XCTAssertNotNil(response.error)
-            expectation.fulfill()
-        }
-
+        let request = AnythingRequest(dict: ["key": "value"])
+        let task = networkService.buildTask(from: request)
         XCTAssertNotNil(task)
+        task!.run()
+        wait(for: [], timeout: 0.1)
         task!.stop()
 
-        wait(for: [expectation], timeout: 1)
+        XCTAssertTrue(task is UtilizableRequestTask)
+        XCTAssertTrue((task as! UtilizableRequestTask).stopped)
     }
 
     func testMultipartRequest() {

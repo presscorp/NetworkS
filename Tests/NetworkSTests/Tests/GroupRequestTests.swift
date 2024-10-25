@@ -26,7 +26,7 @@ final class GroupRequestTests: NetworkSTests {
         _ value: String,
         _ completion: @escaping (_ result: Result<String, NetworkError>) -> Void
     ) -> RequestTask? {
-        let request = AnythingRequest(parameters: ["value": value])
+        let request = AnythingRequest(dict: ["value": value])
         return networkService.buildTask(from: request) { response in
             guard response.success else {
                 return completion(.failure(response.error ?? .unknown))

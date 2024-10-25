@@ -5,15 +5,15 @@
 <br>
 
 ## List of features
-- NetworkS utilizes fundamental `URLSession` under the hood
-- NetworkS uses callback based approach for request making
+- **NetworkS** utilizes fundamental `URLSession` with GCD under the hood
+- **NetworkS** uses callback based approach for request making
 - All interactions with NetworkS are based on protocols, so you can make your own implementations of
-`NetworkSessionInterface`, `NetworkService`
-- NetworkS provides logger that prints beautifully crafted request/response events into *Xcode* console
-- NetworkS provides the opportunity to renew session by updating authorization
-- NetworkS supports SSL certificate pinning along with default challenge
-- NetworkS supports easily implemented response mocking
-- NetworkS supports response caching feature
+`NetworkSessionInterface` or `NetworkService`
+- **NetworkS** provides logger that prints beautifully crafted request/response events into *Xcode* console
+- **NetworkS** provides the opportunity to renew session by updating authorization
+- **NetworkS** supports SSL certificate pinning along with default challenge
+- **NetworkS** supports easily implemented response mocking
+- **NetworkS** supports response caching feature
 
 <br>
 
@@ -23,13 +23,13 @@
 ```Swift
 import NetworkS
 
-struct HttpbinOrgURL: RequestURLExtensible {
+struct HttpbinOrgURL {
 
     let path: String
     var host: String { "httpbin.org" }
 }
 
-extension HttpbinOrgURL {
+extension HttpbinOrgURL: RequestURLExtensible {
 
     static let uuid = Self("/uuid")
 }
@@ -40,11 +40,10 @@ extension HttpbinOrgURL {
 ```Swift
 import NetworkS
 
-class UUIDRequest: NetworkRequest {
+final class UUIDRequest: NetworkRequestExtensible {
 
     var url: RequestURL { HttpbinOrgURL.uuid }
     var method: RequestMethod { .GET }
-    var encoding: RequestContentEncoding { .url }
 }
 
 ```
@@ -55,7 +54,7 @@ import NetworkS
 
 // Create session interface and use it across the app
 let sessionAdapter = NetworkSessionAdapter()
-sessionAdapter.sslCertificateCheck = .disabled
+sessionAdapter.sslCertificateCheck = .enabled(allowDefault: true)
 
 // Work with a new instance of network service
 let worker = NetworkWorker(sessionInterface: sessionAdapter)
